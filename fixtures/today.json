@@ -1,0 +1,91 @@
+{
+  "amritsar_date": "2026-11-11",
+  "status": "published",
+  "ang": 680,
+  "first_line_id": 29497,
+  "last_line_id": 29503,
+  "comp_id": 2699,
+  "opening_line_id": 29498,
+  "opening_gurmukhi": "ਜਤਨ ਕਰੈ ਮਾਨੁਖ ਡਹਕਾਵੈ ਓਹੁ ਅੰਤਰਜਾਮੀ ਜਾਨੈ ॥",
+  "opening_translit": "jatan karai maanukh dahakaavai oh antarajaamee jaanai",
+  "line_count": 7,
+  "range_sha256": "61975a8dea4d5174e173a5c6d1f3b761653f19ba7029b4386d03a475ed7689f4",
+  "scripture_sha256": "0eff4bae60cfcf1c63ae4ac14c2ecf255a9457edc0bebaf627aa28dedb89c84f",
+  "citation": "Sri Guru Granth Sahib Ji · Ang 680",
+  "published_at": "2026-11-11T00:25:03+00:00",
+  "credit": "Located by Ang from the Hukamnama published by SGPC (hs.sgpc.net); text from Sri Guru Granth Sahib Ji.",
+  "ang_end": 680,
+  "raag": "ਧਨਾਸਰੀ",
+  "author": "Guru Arjan Dev Ji (M5)",
+  "url": "https://gurbanisoul.com/en/hukamnama/2026-11-11",
+  "attribution": {
+    "text": "Hukamnama · Sri Harmandir Sahib, via Gurbani Soul",
+    "url": "https://gurbanisoul.com/en/hukamnama/2026-11-11"
+  },
+  "terms_url": "https://gurbanisoul.com/en/developers#terms",
+  "lines": [
+    {
+      "id": 29497,
+      "ang": 680,
+      "gurmukhi": "ਧਨਾਸਰੀ ਮਹਲਾ ੫ ॥",
+      "translit": "dhanaasaree mahalaa",
+      "is_heading": true,
+      "is_rahao": false,
+      "author": "Guru Arjan Dev Ji (M5)"
+    },
+    {
+      "id": 29498,
+      "ang": 680,
+      "gurmukhi": "ਜਤਨ ਕਰੈ ਮਾਨੁਖ ਡਹਕਾਵੈ ਓਹੁ ਅੰਤਰਜਾਮੀ ਜਾਨੈ ॥",
+      "translit": "jatan karai maanukh dahakaavai oh antarajaamee jaanai",
+      "is_heading": false,
+      "is_rahao": false,
+      "author": "Guru Arjan Dev Ji (M5)"
+    },
+    {
+      "id": 29499,
+      "ang": 680,
+      "gurmukhi": "ਪਾਪ ਕਰੇ ਕਰਿ ਮੂਕਰਿ ਪਾਵੈ ਭੇਖ ਕਰੈ ਨਿਰਬਾਨੈ ॥੧॥",
+      "translit": "paap kare kar mookar paavai bhekh karai nirabaanai",
+      "is_heading": false,
+      "is_rahao": false,
+      "author": "Guru Arjan Dev Ji (M5)"
+    },
+    {
+      "id": 29500,
+      "ang": 680,
+      "gurmukhi": "ਜਾਨਤ ਦੂਰਿ ਤੁਮਹਿ ਪ੍ਰਭ ਨੇਰਿ ॥",
+      "translit": "jaanat door tumah prabh ner",
+      "is_heading": false,
+      "is_rahao": false,
+      "author": "Guru Arjan Dev Ji (M5)"
+    },
+    {
+      "id": 29501,
+      "ang": 680,
+      "gurmukhi": "ਉਤ ਤਾਕੈ ਉਤ ਤੇ ਉਤ ਪੇਖੈ ਆਵੈ ਲੋਭੀ ਫੇਰਿ ॥ ਰਹਾਉ ॥",
+      "translit": "ut taakai ut te ut pekhai aavai lobhee pher",
+      "is_heading": false,
+      "is_rahao": true,
+      "author": "Guru Arjan Dev Ji (M5)"
+    },
+    {
+      "id": 29502,
+      "ang": 680,
+      "gurmukhi": "ਜਬ ਲਗੁ ਤੁਟੈ ਨਾਹੀ ਮਨ ਭਰਮਾ ਤਬ ਲਗੁ ਮੁਕਤੁ ਨ ਕੋਈ ॥",
+      "translit": "jab lag tutai naahee man bharamaa tab lag mukat na koee",
+      "is_heading": false,
+      "is_rahao": false,
+      "author": "Guru Arjan Dev Ji (M5)"
+    },
+    {
+      "id": 29503,
+      "ang": 680,
+      "gurmukhi": "ਕਹੁ ਨਾਨਕ ਦਇਆਲ ਸੁਆਮੀ ਸੰਤੁ ਭਗਤੁ ਜਨੁ ਸੋਈ ॥੨॥੫॥੩੬॥",
+      "translit": "kah naanak daiaal suaamee sant bhagat jan soee",
+      "is_heading": false,
+      "is_rahao": false,
+      "author": "Guru Arjan Dev Ji (M5)"
+    }
+  ]
+}

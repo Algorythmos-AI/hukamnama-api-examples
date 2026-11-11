@@ -1,0 +1,15 @@
+{
+  "scripture_sha256": "0eff4bae60cfcf1c63ae4ac14c2ecf255a9457edc0bebaf627aa28dedb89c84f",
+  "latest": "2026-11-11",
+  "days": [
+    {
+      "amritsar_date": "2026-11-11",
+      "ang": 680,
+      "raag": "ਧਨਾਸਰੀ",
+      "author": "Guru Arjan Dev Ji (M5)",
+      "line_count": 7,
+      "range_sha256": "61975a8dea4d5174e173a5c6d1f3b761653f19ba7029b4386d03a475ed7689f4",
+      "published_at": "2026-11-11T00:25:03+00:00"
+    }
+  ]
+}

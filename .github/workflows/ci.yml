@@ -1,0 +1,57 @@
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+concurrency:
+  group: ci-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  examples:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: The fixture day proves against its hash
+        run: |
+          python3 - <<'PY'
+          import hashlib, json
+          d = json.load(open("fixtures/today.json", encoding="utf-8"))
+          text = "\n".join(l["gurmukhi"] for l in d["lines"])
+          assert hashlib.sha256(text.encode()).hexdigest() == d["range_sha256"], "fixtures/today.json does not prove"
+          assert len(d["lines"]) == d["line_count"]
+          print("fixture proves:", d["amritsar_date"], d["citation"])
+          PY
+      - name: Command-line examples against the stand-in API (Swift runs on macOS)
+        run: SKIP_SWIFT=1 sh tests/run.sh
+      - name: The two web pages in a browser
+        run: |
+          npm install --no-audit --no-fund
+          npx playwright install --with-deps chromium
+          node tests/browser.mjs
+  swift:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Every command-line example, Swift included
+        run: sh tests/run.sh
+  wordpress:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ["7.4", "8.3"]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+      - name: Every PHP file parses
+        run: find wordpress -name '*.php' -print0 | xargs -0 -n1 php -l
+      - name: The plugin's tests
+        run: php wordpress/tests/run.php

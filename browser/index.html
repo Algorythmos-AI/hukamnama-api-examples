@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hukamnama · Sri Harmandir Sahib</title>
+<style>
+  body { margin: 0; font: 17px/1.6 system-ui, sans-serif; color: #1b1714; background: #fbf7f0; }
+  main { max-width: 40rem; margin: 0 auto; padding: 2rem 1rem; }
+  h1 { font-size: 1.1rem; margin: 0; }
+  #date { margin: .2rem 0 1.4rem; color: #5c5148; }
+  #lines p { margin: 0 0 .5rem; font-size: 1.45rem; line-height: 1.9; overflow-wrap: anywhere; }
+  footer { margin-top: 1.6rem; padding-top: 1rem; border-top: 1px solid #ddd3c2; font-size: .9rem; color: #5c5148; }
+  a { color: inherit; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Hukamnama · Sri Harmandir Sahib</h1>
+  <p id="date" aria-live="polite">Loading…</p>
+  <!-- The Gurmukhi is placed with textContent, line by line, never as HTML and never shortened. -->
+  <div id="lines" lang="pa"></div>
+  <footer>
+    <p id="citation"></p>
+    <p><a id="credit" rel="noopener"></a></p>
+  </footer>
+</main>
+<script type="module">
+  import { apiFor, isToday, latestPublished, NotProven } from "./hukamnama.js";
+
+  const date = document.getElementById("date");
+  try {
+    const day = await latestPublished(apiFor(location));
+    if (day === null) {
+      date.textContent = "No Hukamnama is available yet.";
+    } else {
+      const shown = new Date(day.amritsar_date + "T00:00:00Z")
+        .toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
+      date.textContent = (isToday(day) ? "Today's Hukamnama, " : "Hukamnama, ") + shown + " (Amritsar)";
+      const lines = document.getElementById("lines");
+      for (const line of day.lines) {
+        const p = document.createElement("p");
+        p.textContent = line.gurmukhi;                 // exactly as it arrived
+        lines.append(p);
+      }
+      document.getElementById("citation").textContent = day.citation;
+      const credit = document.getElementById("credit");
+      credit.textContent = day.attribution.text;
+      credit.href = day.attribution.url;
+    }
+  } catch (e) {
+    date.textContent = e instanceof NotProven
+      ? "The Hukamnama could not be verified, so it is not shown. Please try again later."
+      : "The Hukamnama cannot be loaded right now. Please try again in a few minutes.";
+  }
+</script>
+</body>
+</html>

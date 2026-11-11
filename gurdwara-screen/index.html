@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hukamnama · Sri Harmandir Sahib</title>
+<!--
+  A full-screen Hukamnama for a television or projector in a Gurdwara.
+
+  Put this one file on any web server (or open it on the screen's own computer) and leave it on.
+  It asks the API every five minutes, proves the lines against their hash before showing them,
+  and keeps the last proved Hukamnama on screen if the network drops.
+
+  Options, in the address:  ?theme=dark   dark background (default is light)
+                            ?translit=1   a line of transliteration under each line
+
+  The whole shabad is shown and the text is sized to fit; nothing is ever cut. Before the
+  morning's Hukamnama is published the most recent one stays up under its own date.
+-->
+<style>
+  :root { --bg: #fbf7f0; --ink: #1b1714; --soft: #5c5148; --line: #ddd3c2; }
+  :root[data-theme="dark"] { --bg: #14110f; --ink: #f4ede2; --soft: #b9ad9d; --line: #3a322b; }
+  html, body { height: 100%; margin: 0; }
+  body { display: flex; flex-direction: column; background: var(--bg); color: var(--ink);
+         font-family: system-ui, sans-serif; padding: 3vh 4vw; box-sizing: border-box; overflow: hidden; }
+  header { display: flex; justify-content: space-between; align-items: baseline; gap: 2vw;
+           border-bottom: 1px solid var(--line); padding-bottom: 1.5vh; }
+  h1 { margin: 0; font-size: 3vh; font-weight: 600; }
+  #date { font-size: 3vh; color: var(--soft); text-align: right; }
+  #stage { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; }
+  #lines { width: 100%; text-align: center; }
+  #lines p { margin: 0 0 .35em; line-height: 1.75; overflow-wrap: anywhere; }
+  #lines p.t { font-size: .5em; color: var(--soft); margin-bottom: .9em; }
+  #status { font-size: 4vh; color: var(--soft); text-align: center; }
+  footer { display: flex; justify-content: space-between; gap: 2vw; border-top: 1px solid var(--line);
+           padding-top: 1.5vh; font-size: 2.2vh; color: var(--soft); }
+</style>
+</head>
+<body>
+<header>
+  <h1>Hukamnama · Sri Harmandir Sahib</h1>
+  <div id="date"></div>
+</header>
+<div id="stage">
+  <div id="lines" lang="pa" hidden></div>
+  <div id="status">Loading…</div>
+</div>
+<footer>
+  <span id="citation"></span>
+  <span id="credit"></span>
+</footer>
+<script type="module">
+  const params = new URLSearchParams(location.search);
+  if (params.get("theme") === "dark") document.documentElement.dataset.theme = "dark";
+  const TRANSLIT = params.get("translit") === "1";
+  const REFRESH_MS = 5 * 60 * 1000;
+  const AMRITSAR_OFFSET_MS = (5 * 60 + 30) * 60 * 1000;      // a fixed offset: India has no summer time
+  // A stand-in API may be named with ?api= only while the page itself is opened from this computer.
+  const local = ["localhost", "127.0.0.1", "[::1]"].includes(location.hostname);
+  const asked = params.get("api");
+  const API = local && asked && /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(asked) ? asked : "https://api.gurbanisoul.com";
+
+  const el = (id) => document.getElementById(id);
+  const get = async (path) => {
+    const res = await fetch(API + path, { cache: "no-cache" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return res.json();
+  };
+  const proved = async (day) => {
+    const text = day.lines.map((line) => line.gurmukhi).join("\n");
+    const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+    return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("") === day.range_sha256;
+  };
+  const amritsarDate = () => new Date(Date.now() + AMRITSAR_OFFSET_MS).toISOString().slice(0, 10);
+
+  let shown = null;      // the hash of what is on screen
+
+  function fit() {       // the largest size at which the whole shabad fits: never cut, never scrolled
+    const stage = el("stage"), lines = el("lines");
+    let lo = 10, hi = 200;
+    while (hi - lo > 1) {
+      const mid = (lo + hi) >> 1;
+      lines.style.fontSize = mid + "px";
+      if (lines.scrollHeight <= stage.clientHeight && lines.scrollWidth <= stage.clientWidth) lo = mid; else hi = mid;
+    }
+    lines.style.fontSize = lo + "px";
+  }
+
+  function label(day) {
+    const date = new Date(day.amritsar_date + "T00:00:00Z")
+      .toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
+    // "Today's" only while the day's date is still the date in Amritsar.
+    el("date").textContent = (day.amritsar_date === amritsarDate() ? "Today · " : "") + date;
+  }
+
+  function show(day) {
+    const lines = el("lines");
+    lines.replaceChildren();
+    for (const line of day.lines) {
+      const p = document.createElement("p");
+      p.textContent = line.gurmukhi;                    // exactly as it arrived
+      lines.append(p);
+      if (TRANSLIT && line.translit) {
+        const t = document.createElement("p");
+        t.className = "t"; t.lang = "pa-Latn"; t.textContent = line.translit;
+        lines.append(t);
+      }
+    }
+    el("citation").textContent = day.citation;
+    el("credit").textContent = day.attribution.text + " · gurbanisoul.com";
+    el("status").hidden = true;
+    lines.hidden = false;
+    fit();
+    shown = day;
+  }
+
+  async function refresh() {
+    try {
+      let day = await get("/v1/hukamnama/today");
+      if (day.status !== "published") {
+        if (!day.latest) throw new Error("nothing published yet");
+        day = await get("/v1/hukamnama/" + day.latest);
+      }
+      if (day.status !== "published") throw new Error("nothing published yet");
+      if (!(await proved(day))) throw new Error("not proved");     // show nothing new
+      if (!shown || shown.range_sha256 !== day.range_sha256 || shown.amritsar_date !== day.amritsar_date) show(day);
+    } catch (e) {
+      // Keep the last proved Hukamnama on screen. With nothing to show, say so plainly.
+      if (!shown) el("status").textContent = "The Hukamnama cannot be shown right now.";
+    }
+    if (shown) label(shown);                             // "Today" falls away at midnight in Amritsar
+  }
+
+  addEventListener("resize", () => shown && fit());
+  await refresh();
+  setInterval(refresh, REFRESH_MS);
+</script>
+</body>
+</html>
